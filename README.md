@@ -392,19 +392,19 @@ set -a
 source .env.production
 set +a
 
-streamlit run streamlit_app.py --server.address 0.0.0.0 --server.port 8501
+streamlit run streamlit_app.py --server.address 0.0.0.0 --server.port 8000
 ```
 
 Open in browser:
 
 ```text
-http://localhost:8501
+http://localhost:8000
 ```
 
 Or from another machine on the same network:
 
 ```text
-http://<server-ip>:8501
+http://<server-ip>:8000
 ```
 
 ---
