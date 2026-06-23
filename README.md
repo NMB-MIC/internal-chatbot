@@ -192,14 +192,7 @@ data/documents/developer_support/mic9000_internal_rag_chatbot_runbook.md
 Do not keep unrelated personal files in production documents, for example:
 
 ```text
-data/documents/company_info/Apiwit_Tech_CV.pdf
-```
-
-If the CV exists, remove it before rebuilding the production index:
-
-```bash
-rm -f data/documents/company_info/Apiwit_Tech_CV.pdf
-rmdir data/documents/company_info 2>/dev/null || true
+data/documents/company_info/KFC_menu.pdf
 ```
 
 After changing documents, always rebuild the index and run release checks.
