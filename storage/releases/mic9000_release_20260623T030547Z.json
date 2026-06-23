@@ -1,0 +1,67 @@
+{
+  "release_id": "mic9000_release_20260623T030547Z",
+  "version": "1.0.0-rc1",
+  "release_stage": "release-candidate",
+  "ui_runtime": "streamlit",
+  "generated_at_utc": "2026-06-23T03:05:47.204142+00:00",
+  "project_root": "/home/micml/Documents/Chatbot/internal-rag-chatbot",
+  "env_file": ".env.production",
+  "python": "3.11.5",
+  "platform": "Linux-6.8.0-124-generic-x86_64-with-glibc2.35",
+  "git_commit": null,
+  "app_env": "production",
+  "mic_index_mode": "production",
+  "latest_manifest": {
+    "rebuild_id": "20260622T091826Z_1d68fd9b",
+    "mode": "production",
+    "manifest_path": "storage/index_manifests/20260622T091826Z_1d68fd9b.json",
+    "started_at_utc": "2026-06-22T09:18:26+00:00",
+    "completed_at_utc": "2026-06-22T09:18:52+00:00",
+    "indexed_points": 38,
+    "point_count_after_upsert": 38,
+    "accepted_files": 2,
+    "quarantined_files": 10,
+    "rejected_files": 0,
+    "warned_files": 0,
+    "secret_hits": 0,
+    "synthetic_fixture_hits": 9,
+    "external_book_hits": 1,
+    "snapshot_enabled": true,
+    "snapshot_created": true,
+    "snapshot_name": "internal_documents-66453968676882-2026-06-22-09-18-26.snapshot"
+  },
+  "eval_reports": {
+    "runbook_regression": {
+      "found": true,
+      "report_path": "eval_reports/20260623T030459Z_runbook_regression.json",
+      "suite_name": "runbook_regression",
+      "total_cases": 8,
+      "passed_cases": 8,
+      "failed_cases": 0,
+      "skipped_cases": 0,
+      "pass_rate": 1.0
+    },
+    "document_mode_smoke": {
+      "found": true,
+      "report_path": "eval_reports/20260623T030520Z_document_mode_smoke.json",
+      "suite_name": "document_mode_smoke",
+      "total_cases": 3,
+      "passed_cases": 3,
+      "failed_cases": 0,
+      "skipped_cases": 0,
+      "pass_rate": 1.0
+    },
+    "thai_runbook_smoke": {
+      "found": true,
+      "report_path": "eval_reports/20260623T030540Z_thai_runbook_smoke.json",
+      "suite_name": "thai_runbook_smoke",
+      "total_cases": 2,
+      "passed_cases": 2,
+      "failed_cases": 0,
+      "skipped_cases": 0,
+      "pass_rate": 1.0
+    }
+  },
+  "release_gate": "pass",
+  "gate_failures": []
+}

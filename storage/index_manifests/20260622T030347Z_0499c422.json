@@ -1,0 +1,286 @@
+{
+  "all_chunks": 38,
+  "completed_at_utc": "2026-06-22T03:04:07+00:00",
+  "discovered_files": 3,
+  "document_safety": {
+    "accepted_files": 2,
+    "external_book_hits": 1,
+    "files": [
+      {
+        "category": "admin_support",
+        "extension": ".md",
+        "external_book_hits": [],
+        "modified_at_utc": "2026-05-30T08:40:33+00:00",
+        "quarantined_to": "/home/micml/Documents/Chatbot/internal-rag-chatbot/storage/index_quarantine/20260622T030347Z_0499c422/quarantined/admin_support/batch2_sample_leave_request_policy.md",
+        "reasons": [
+          "synthetic/test fixture detected in production mode"
+        ],
+        "relative_path": "admin_support/batch2_sample_leave_request_policy.md",
+        "secret_hits": [],
+        "sha256": "ecf2182ba7cc395a7690e2234b304d2dff34c90fe1e46827b646c1d85097ac34",
+        "size_bytes": 546,
+        "stale_hits": [],
+        "status": "quarantined",
+        "synthetic_hits": [
+          "batch_sample_filename",
+          "synthetic_keyword"
+        ],
+        "warnings": []
+      },
+      {
+        "category": "admin_support",
+        "extension": ".csv",
+        "external_book_hits": [],
+        "modified_at_utc": "2026-05-30T08:40:33+00:00",
+        "quarantined_to": "/home/micml/Documents/Chatbot/internal-rag-chatbot/storage/index_quarantine/20260622T030347Z_0499c422/quarantined/admin_support/batch2_sample_support_contacts.csv",
+        "reasons": [
+          "synthetic/test fixture detected in production mode"
+        ],
+        "relative_path": "admin_support/batch2_sample_support_contacts.csv",
+        "secret_hits": [],
+        "sha256": "065d0eea3de0f4d850e9c37ec6c314b6c8231cec01554fa59411e92bd927b2a5",
+        "size_bytes": 273,
+        "stale_hits": [],
+        "status": "quarantined",
+        "synthetic_hits": [
+          "batch_sample_filename"
+        ],
+        "warnings": []
+      },
+      {
+        "category": "admin_support",
+        "extension": ".txt",
+        "external_book_hits": [],
+        "modified_at_utc": "2026-06-05T02:04:17+00:00",
+        "quarantined_to": "/home/micml/Documents/Chatbot/internal-rag-chatbot/storage/index_quarantine/20260622T030347Z_0499c422/quarantined/admin_support/batch3_sample_long_thai_internal_procedure.txt",
+        "reasons": [
+          "synthetic/test fixture detected in production mode"
+        ],
+        "relative_path": "admin_support/batch3_sample_long_thai_internal_procedure.txt",
+        "secret_hits": [],
+        "sha256": "734504e74e6cf79a1d206c76afa43000a9260169f38519255cda621ef8a678f3",
+        "size_bytes": 9308,
+        "stale_hits": [],
+        "status": "quarantined",
+        "synthetic_hits": [
+          "batch_sample_filename"
+        ],
+        "warnings": []
+      },
+      {
+        "category": "company_info",
+        "extension": ".pdf",
+        "external_book_hits": [],
+        "modified_at_utc": "2026-06-06T09:16:11+00:00",
+        "quarantined_to": null,
+        "reasons": [],
+        "relative_path": "company_info/Apiwit_Tech_CV.pdf",
+        "secret_hits": [],
+        "sha256": "78086776f890624ca132c44437b13daef6489dabc0c7d963ea5073278ae2ab59",
+        "size_bytes": 145669,
+        "stale_hits": [],
+        "status": "accepted",
+        "synthetic_hits": [],
+        "warnings": []
+      },
+      {
+        "category": "company_info",
+        "extension": ".pdf",
+        "external_book_hits": [
+          "blood_meridian",
+          "cormac_mccarthy"
+        ],
+        "modified_at_utc": "2026-06-06T07:39:57+00:00",
+        "quarantined_to": "/home/micml/Documents/Chatbot/internal-rag-chatbot/storage/index_quarantine/20260622T030347Z_0499c422/quarantined/company_info/Cormac Mccarthy - The Blood Meridian.pdf",
+        "reasons": [
+          "external book/stress-test document detected in production mode"
+        ],
+        "relative_path": "company_info/Cormac Mccarthy - The Blood Meridian.pdf",
+        "secret_hits": [],
+        "sha256": "2c3348645158a426c82e8d5337412ea2da9fc72e8c025833f99853e4a9d48283",
+        "size_bytes": 1528332,
+        "stale_hits": [],
+        "status": "quarantined",
+        "synthetic_hits": [],
+        "warnings": []
+      },
+      {
+        "category": "company_info",
+        "extension": ".txt",
+        "external_book_hits": [],
+        "modified_at_utc": "2026-05-30T08:40:33+00:00",
+        "quarantined_to": "/home/micml/Documents/Chatbot/internal-rag-chatbot/storage/index_quarantine/20260622T030347Z_0499c422/quarantined/company_info/batch2_sample_company_overview.txt",
+        "reasons": [
+          "synthetic/test fixture detected in production mode"
+        ],
+        "relative_path": "company_info/batch2_sample_company_overview.txt",
+        "secret_hits": [],
+        "sha256": "7c0d2000a0d574ae15a1194d1abddcccfb519cfd22ccc3cb400ced04b634ef56",
+        "size_bytes": 665,
+        "stale_hits": [],
+        "status": "quarantined",
+        "synthetic_hits": [
+          "batch_sample_filename",
+          "synthetic_keyword",
+          "test_document_keyword"
+        ],
+        "warnings": []
+      },
+      {
+        "category": "developer_support",
+        "extension": ".docx",
+        "external_book_hits": [],
+        "modified_at_utc": "2026-05-30T08:40:33+00:00",
+        "quarantined_to": "/home/micml/Documents/Chatbot/internal-rag-chatbot/storage/index_quarantine/20260622T030347Z_0499c422/quarantined/developer_support/batch2_sample_machine_log_streaming_setup.docx",
+        "reasons": [
+          "synthetic/test fixture detected in production mode"
+        ],
+        "relative_path": "developer_support/batch2_sample_machine_log_streaming_setup.docx",
+        "secret_hits": [],
+        "sha256": "8b64e55de1614a01c3f9204237c301a44c425731fe6e7efefeedfadcede9f764",
+        "size_bytes": 37162,
+        "stale_hits": [],
+        "status": "quarantined",
+        "synthetic_hits": [
+          "batch_sample_filename"
+        ],
+        "warnings": []
+      },
+      {
+        "category": "developer_support",
+        "extension": ".md",
+        "external_book_hits": [],
+        "modified_at_utc": "2026-06-05T02:04:17+00:00",
+        "quarantined_to": "/home/micml/Documents/Chatbot/internal-rag-chatbot/storage/index_quarantine/20260622T030347Z_0499c422/quarantined/developer_support/batch3_sample_long_streaming_runbook.md",
+        "reasons": [
+          "synthetic/test fixture detected in production mode"
+        ],
+        "relative_path": "developer_support/batch3_sample_long_streaming_runbook.md",
+        "secret_hits": [],
+        "sha256": "7deac380b93cfc358bc9fd845ec2e08c9ebb2781d8d0ecf8a36c28224872ead1",
+        "size_bytes": 5233,
+        "stale_hits": [],
+        "status": "quarantined",
+        "synthetic_hits": [
+          "batch_sample_filename",
+          "synthetic_keyword"
+        ],
+        "warnings": []
+      },
+      {
+        "category": "developer_support",
+        "extension": ".md",
+        "external_book_hits": [],
+        "modified_at_utc": "2026-06-12T03:41:25+00:00",
+        "quarantined_to": null,
+        "reasons": [],
+        "relative_path": "developer_support/machine_status_prediction_runbook.md",
+        "secret_hits": [],
+        "sha256": "a5ccd2a57f4740e4d0d5c7d2f7b9f42abee355b11d05e4505e398aa2ae673f6d",
+        "size_bytes": 17423,
+        "stale_hits": [],
+        "status": "accepted",
+        "synthetic_hits": [],
+        "warnings": []
+      },
+      {
+        "category": "kafka_iot_support",
+        "extension": ".pdf",
+        "external_book_hits": [],
+        "modified_at_utc": "2026-05-30T08:40:33+00:00",
+        "quarantined_to": "/home/micml/Documents/Chatbot/internal-rag-chatbot/storage/index_quarantine/20260622T030347Z_0499c422/quarantined/kafka_iot_support/batch2_sample_kafka_troubleshooting.pdf",
+        "reasons": [
+          "synthetic/test fixture detected in production mode"
+        ],
+        "relative_path": "kafka_iot_support/batch2_sample_kafka_troubleshooting.pdf",
+        "secret_hits": [],
+        "sha256": "8e1e79207d9fb1fe89a151d1801422b350580c38d6f64d3b32d1037767dc121a",
+        "size_bytes": 2121,
+        "stale_hits": [],
+        "status": "quarantined",
+        "synthetic_hits": [
+          "batch_sample_filename"
+        ],
+        "warnings": []
+      },
+      {
+        "category": "kafka_iot_support",
+        "extension": ".xlsx",
+        "external_book_hits": [],
+        "modified_at_utc": "2026-05-30T08:40:33+00:00",
+        "quarantined_to": "/home/micml/Documents/Chatbot/internal-rag-chatbot/storage/index_quarantine/20260622T030347Z_0499c422/quarantined/kafka_iot_support/batch2_sample_plant_topic_mapping.xlsx",
+        "reasons": [
+          "synthetic/test fixture detected in production mode"
+        ],
+        "relative_path": "kafka_iot_support/batch2_sample_plant_topic_mapping.xlsx",
+        "secret_hits": [],
+        "sha256": "0719fe17521d8470b4a02f221eb04b17eb964ef141cc0fa5e9fd273871992b04",
+        "size_bytes": 5533,
+        "stale_hits": [],
+        "status": "quarantined",
+        "synthetic_hits": [
+          "batch_sample_filename"
+        ],
+        "warnings": []
+      },
+      {
+        "category": "kafka_iot_support",
+        "extension": ".csv",
+        "external_book_hits": [],
+        "modified_at_utc": "2026-06-05T02:04:17+00:00",
+        "quarantined_to": "/home/micml/Documents/Chatbot/internal-rag-chatbot/storage/index_quarantine/20260622T030347Z_0499c422/quarantined/kafka_iot_support/batch3_sample_large_topic_matrix.csv",
+        "reasons": [
+          "synthetic/test fixture detected in production mode"
+        ],
+        "relative_path": "kafka_iot_support/batch3_sample_large_topic_matrix.csv",
+        "secret_hits": [],
+        "sha256": "3511f93b8c1127ea70987b2fd56f722bc96173a680813b14b8cb531c04ba1eb6",
+        "size_bytes": 2231,
+        "stale_hits": [],
+        "status": "quarantined",
+        "synthetic_hits": [
+          "batch_sample_filename",
+          "synthetic_keyword"
+        ],
+        "warnings": []
+      }
+    ],
+    "mode": "production",
+    "quarantined_files": 10,
+    "rejected_files": 0,
+    "secret_hits": 0,
+    "stale_hits": 0,
+    "synthetic_fixture_hits": 9,
+    "warned_files": 0
+  },
+  "extracted_units": 2,
+  "failed_files": 0,
+  "loaded_files": 2,
+  "manifest_path": null,
+  "mode": "production",
+  "promoted_files": [],
+  "qdrant": {
+    "collection_name": "internal_documents",
+    "duplicate_groups": 0,
+    "elapsed_seconds": 0.0341,
+    "indexed_points": 38,
+    "input_chunks": 38,
+    "point_count_after_upsert": 38,
+    "skipped_exact_duplicates": 0,
+    "upsert_batch_size": 64,
+    "vector_dimension": 1024
+  },
+  "rebuild_id": "20260622T030347Z_0499c422",
+  "skipped_exact_duplicates": 0,
+  "skipped_files": 1,
+  "snapshot": {
+    "collection_name": "internal_documents",
+    "created": true,
+    "enabled": true,
+    "error": null,
+    "snapshot_name": "internal_documents-66453968676882-2026-06-22-03-03-47.snapshot"
+  },
+  "started_at_utc": "2026-06-22T03:03:47+00:00",
+  "unique_chunks": 38,
+  "vector_dimension": 1024
+}

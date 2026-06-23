@@ -1,0 +1,40 @@
+# Core app
+streamlit
+python-dotenv
+pydantic
+requests
+
+# Data handling
+pandas
+numpy
+tqdm
+
+# LLM / orchestration
+ollama
+langchain
+langchain-core
+langchain-community
+langchain-ollama
+langchain-qdrant
+langgraph
+langchain-text-splitters
+
+# Vector database
+qdrant-client
+
+# Embeddings
+sentence-transformers
+transformers
+torch
+
+# Document loading
+pypdf
+python-docx
+openpyxl
+
+# Notebook/dev
+jupyter
+ipykernel
+
+# Dev-only test fixture generation
+reportlab

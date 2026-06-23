@@ -1,0 +1,14 @@
+Internal Company Knowledge Base — Sample Overview
+
+This is a synthetic test document for the internal RAG chatbot.
+
+The company has an internal support assistant for:
+- company information
+- admin procedures
+- developer support
+- technical troubleshooting
+- Kafka and IOT support
+
+ข้อมูลตัวอย่างภาษาไทย:
+ผู้ใช้งานสามารถสอบถามข้อมูลทั่วไปของบริษัท ขั้นตอนการทำงานภายใน
+และแนวทางการแก้ไขปัญหาทางเทคนิคเบื้องต้นได้
