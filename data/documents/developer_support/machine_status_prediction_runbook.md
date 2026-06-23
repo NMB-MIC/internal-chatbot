@@ -1,0 +1,647 @@
+The architecture forms a real-time predictive pipeline that ingests industrial machine status updates, dynamically engineers temporal features, evaluates machine behavior using LightGBM machine learning models, and delivers actionable ETA alerts to operators.
+
+# Real-Time Machine Status Prediction Pipeline
+
+A real-time machine status prediction system that ingests machine events from MQTT, streams them through Kafka and Apache Flink, performs stateful feature engineering, calls a FastAPI inference service, and publishes predicted machine alert ETA results for logging and live dashboard monitoring.
+
+---
+
+## Overview
+
+This system is designed for real-time predictive maintenance and machine exception forecasting.
+
+The pipeline receives machine status events, transforms them into a standardized schema, generates dynamic time-based features, performs real-time inference using pretrained LightGBM models, and sends prediction results to downstream applications such as:
+
+- Prediction logging and auditing
+- Model retraining datasets
+- Live operator dashboards
+- Maintenance prioritization workflows
+
+---
+
+## System Architecture
+
+```mermaid
+flowchart TD
+    A[Machines] -->|MQTT Protocol| B[MQTT-to-Kafka Bridge<br/>mqtt_to_ml_kafka.py]
+
+    H[Historical Replay<br/>replay.py] -.->|Offline Backfill / Shadow Testing| B
+
+    B -->|Kafka Topic<br/>iot.machine.status.raw| C[Apache Flink Job<br/>flink/job.py]
+
+    C -->|Engineered Features<br/>HTTP POST /infer| D[FastAPI Inference Service<br/>service/app.py]
+
+    D -->|Prediction Response| C
+
+    C -->|Success| E[Kafka Topic<br/>ml.pred.alert.eta]
+    C -->|Failure / Late Events| F[Kafka Topic<br/>iot.machine.status.dlq]
+
+    E --> G[Prediction Logger<br/>pred_logger.py]
+    E --> I[Streamlit Dashboard<br/>dashboard/app.py]
+
+    G --> J[Daily Apache Parquet Files]
+    I --> K[Live Operations UI<br/>Gantt-style Alert Timeline]
+```
+
+---
+
+## Step-by-Step Data Flow
+
+### 1. Data Ingestion & Bridging
+
+**Component:** `mqtt_to_ml_kafka.py`
+
+The MQTT-to-Kafka bridge subscribes to machine status events from an MQTT broker using hierarchical machine topics.
+
+Example MQTT topic pattern:
+
+```text
+status/nhb/assy/#
+```
+
+The bridge parses the topic structure:
+
+```text
+status/{plant}/{process}/{mc_no}
+```
+
+From this, it extracts:
+
+- `plant`
+- `process`
+- `mc_no`
+- machine status payload
+
+Example incoming payload:
+
+```json
+{
+  "status": "RUN"
+}
+```
+
+The payload is standardized into a versioned JSON schema containing:
+
+- `event_id`
+- `mc_no`
+- `mc_status`
+- `occurred_ts`
+- `ingest_ts`
+
+The `mc_status` value is forced to lowercase before being written downstream.
+
+**Output Kafka topic:**
+
+```text
+iot.machine.status.raw
+```
+
+For offline evaluation or shadow testing, historical CSV or Parquet datasets can also be replayed into this same topic using:
+
+```text
+replay.py
+```
+
+---
+
+### 2. Stream Processing & Stateful Feature Engineering
+
+**Component:** `flink/job.py`
+
+Apache Flink consumes raw events from:
+
+```text
+iot.machine.status.raw
+```
+
+The Flink job performs real-time stream processing with event-time handling.
+
+Core responsibilities include:
+
+- Consuming raw machine status events
+- Assigning event-driven watermarks
+- Handling out-of-order data
+- Filtering highly latent records
+- Sending late records older than 120 minutes to the Dead Letter Queue
+- Grouping events by machine ID
+- Building stateful per-machine features
+
+Late or invalid records are routed to:
+
+```text
+iot.machine.status.dlq
+```
+
+Events are grouped per machine using:
+
+```python
+.key_by(lambda d: d["mc_no"])
+```
+
+This ensures that feature calculations are isolated per machine.
+
+---
+
+## Stateful Feature Builder
+
+**Component:** `FeatureBuilder`
+
+**Flink abstraction:** `KeyedProcessFunction`
+
+The `FeatureBuilder` tracks historical machine activity using Flink managed state through:
+
+```python
+ValueStateDescriptor
+```
+
+It generates **29 dynamic real-time features**, including:
+
+### Calendar & Cyclical Features
+
+- Hour
+- Minute
+- Weekday
+- Weekend flag
+- Sine/cosine cyclical time transformations
+
+### Temporal Features
+
+- Duration since last observed alert
+- Time since last status change
+- Consecutive same-status event counter
+
+### Inter-Alert Lag Features
+
+Historical time intervals between consecutive machine alerts:
+
+- Lag 1
+- Lag 2
+- Lag 3
+
+### Rolling Window Features
+
+Rolling event and alert frequencies calculated over:
+
+- 15-minute windows
+- 60-minute windows
+
+### One-Hot Encoded Features
+
+Fixed-category arrays for:
+
+- Current machine status
+- Previous alert type
+
+---
+
+## 3. Real-Time Model Inference
+
+**Component:** `service/app.py`
+
+The Flink pipeline sends engineered features to the FastAPI inference service through a synchronous HTTP request.
+
+**Endpoint:**
+
+```text
+POST /infer
+```
+
+The request is sent from Flink using:
+
+```text
+HttpInferMap
+```
+
+---
+
+## Feature Enrichment
+
+The inference service combines:
+
+- **29 dynamic features** generated by Flink
+- **5 machine behavioral lookup features** loaded from training profiles
+
+The lookup features come from:
+
+```text
+artifacts_phase4.pkl
+```
+
+These behavioral features include machine-level historical patterns such as:
+
+- Global median gap statistics
+- Alert ratios
+- Shift/activity profile behavior
+
+---
+
+## Model Suite
+
+The enriched feature row is passed into three pretrained LightGBM models.
+
+| Model | Purpose |
+|---|---|
+| `lgbm_quantile_p50_final.pkl` | Predicts the P50 ETA, or median expected time before an alert |
+| `lgbm_quantile_p90_final.pkl` | Predicts the P90 ETA, or conservative upper-bound alert timing |
+| `lgbm_next_type.pkl` | Predicts the next likely alert type |
+
+Supported next-alert categories include:
+
+- `alarm`
+- `fullwork`
+- `m/c stop`
+- `no work`
+
+---
+
+## Inference Guardrails
+
+The FastAPI service applies post-processing and safety policies before returning the prediction.
+
+Guardrails include:
+
+- Scaling calibration
+- Floor and cap constraints per machine ID
+- Classification confidence checks
+- Alert type suppression when confidence is too low
+
+If the predicted alert type confidence is below:
+
+```python
+TYPE_CONF_THRESHOLD = 0.6
+```
+
+The predicted alert type is suppressed as:
+
+```python
+None
+```
+
+This marks the result as uncertain.
+
+---
+
+## 4. Sink Routing & Output Demultiplexing
+
+**Component:** `flink/job.py`
+
+After inference, the FastAPI service returns a prediction response to Flink.
+
+The response contains:
+
+- Prediction results
+- Timestamps
+- Model registry metadata
+- Status routing information
+
+Flink then separates the results into two output paths.
+
+### Successful Predictions
+
+Successful outputs are tagged as:
+
+```text
+OUT
+```
+
+They are written to the main prediction topic:
+
+```text
+ml.pred.alert.eta
+```
+
+### Failed Predictions
+
+Failures, timeout exceptions, or system-level errors are tagged as:
+
+```text
+DLQ
+```
+
+They are routed to:
+
+```text
+iot.machine.status.dlq
+```
+
+This allows failed records to be inspected later for debugging and recovery.
+
+---
+
+## 5. Downstream Consumers
+
+The prediction topic is consumed by two main downstream applications.
+
+```text
+ml.pred.alert.eta
+```
+
+---
+
+### Application A: Prediction Logger
+
+**Component:** `pred_logger.py`
+
+The prediction logger consumes prediction records from Kafka and stores them for long-term analysis.
+
+Responsibilities:
+
+- Consume prediction events
+- Buffer records in micro-batches
+- Flush data regularly into daily Apache Parquet files
+- Preserve prediction history for reporting, auditing, and retraining
+
+Flush policy:
+
+```text
+Every 1000 records or every 60 seconds
+```
+
+Output format:
+
+```text
+Apache Parquet
+```
+
+This creates an append-only historical store for:
+
+- Analytical reporting
+- Model performance monitoring
+- Future retraining loops
+- Audit trails
+
+---
+
+### Application B: Streamlit Dashboard
+
+**Component:** `dashboard/app.py`
+
+The Streamlit dashboard provides a live operations interface for plant-floor users.
+
+Responsibilities:
+
+- Read prediction events directly from Kafka
+- Suppress non-actionable steady states such as normal `run` sequences
+- Apply operator-defined time horizons
+- Visualize upcoming machine exceptions
+- Help operators prioritize maintenance actions
+
+The dashboard displays predictions using a dynamic Gantt-style timeline chart built with:
+
+```text
+Altair
+```
+
+This allows operators to see upcoming machine exceptions in a time-based visual format.
+
+---
+
+## Kafka Topics
+
+| Topic | Purpose |
+|---|---|
+| `iot.machine.status.raw` | Raw standardized machine status events |
+| `iot.machine.status.dlq` | Dead Letter Queue for late records, failures, and timeout exceptions |
+| `ml.pred.alert.eta` | Successful alert ETA prediction results |
+
+---
+
+## Main Components
+
+| Component | File | Role |
+|---|---|---|
+| MQTT-to-Kafka Bridge | `mqtt_to_ml_kafka.py` | Subscribes to MQTT machine events and publishes standardized records to Kafka |
+| Historical Replay | `replay.py` | Replays historical CSV or Parquet data into Kafka |
+| Flink Job | `flink/job.py` | Performs stream processing, feature engineering, inference calls, and output routing |
+| Feature Builder | `FeatureBuilder` | Generates per-machine stateful dynamic features |
+| Inference API | `service/app.py` | Serves LightGBM models through FastAPI |
+| Prediction Logger | `pred_logger.py` | Saves prediction results into daily Parquet files |
+| Dashboard | `dashboard/app.py` | Displays live prediction timelines for operators |
+
+---
+
+## Prediction Flow Summary
+
+```text
+Machine
+  -> MQTT
+  -> MQTT-to-Kafka Bridge
+  -> Kafka Raw Topic
+  -> Apache Flink
+  -> Stateful Feature Engineering
+  -> FastAPI Inference Service
+  -> Apache Flink Output Routing
+  -> Kafka Prediction Topic
+  -> Prediction Logger / Streamlit Dashboard
+```
+
+---
+
+## Key Capabilities
+
+- Real-time machine status ingestion
+- MQTT-to-Kafka streaming bridge
+- Event-time processing with Apache Flink
+- Per-machine stateful feature engineering
+- Dynamic rolling-window feature generation
+- FastAPI-based real-time inference
+- LightGBM quantile ETA prediction
+- Next-alert type classification
+- Confidence-based alert type suppression
+- Dead Letter Queue routing
+- Parquet-based historical logging
+- Live Streamlit operations dashboard
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Messaging | MQTT, Apache Kafka |
+| Stream Processing | Apache Flink |
+| Feature Engineering | Flink Managed State |
+| Model Serving | FastAPI |
+| Machine Learning | LightGBM |
+| Storage | Apache Parquet |
+| Dashboard | Streamlit, Altair |
+| Replay / Backfill | CSV, Parquet, `replay.py` |
+
+---
+
+## Repository Structure
+
+```text
+.
+├── mqtt_to_ml_kafka/
+│   └── mqtt_to_ml_kafka.py
+├── replay/
+│   └── replay.py
+├── flink/
+│   └── job.py
+├── service/
+│   └── app.py
+├── service/models/
+│   └── artifacts_phase4.pkl
+│   └── lgbm_quantile_p50_final.pkl
+│   └── lgbm_quantile_p90_final.pkl
+│   └── lgbm_next_type.pkl
+├── dashboard/
+│   └── app.py
+├── Predictions/
+│   └── pred_logger.py
+
+```
+
+---
+
+## Output
+
+The final system produces real-time prediction events that estimate:
+
+- The median expected time before an alert occurs
+- A conservative upper-bound alert timing estimate
+- The next likely alert type
+- Prediction metadata for monitoring and auditing
+
+These outputs are used by both automated logging systems and live operator dashboards to support proactive maintenance decisions.
+
+```text
+ml.pred.alert.eta
+```
+
+
+
+Prereqs:
+- Docker, kind, kubectl installed on the server
+- Artifacts placed under service/models/
+
+1) Start Kafka (PLAINTEXT localhost)
+- cd kafka
+- docker compose up -d
+- ./create-topics.sh
+- Verify topics exist: docker exec -it kafka kafka-topics.sh --bootstrap-server localhost:9092 --list
+
+2) Start kind and namespace (skip if already running)
+- kind get clusters                          # check first
+- kind create cluster --name kind            # only if not listed
+- kubectl create namespace ml --dry-run=client -o yaml | kubectl apply -f -
+
+3) Build and load service image
+- cd service
+- docker build -t alert-eta-service:v2 .
+- kind load docker-image alert-eta-service:v2 --name kind
+
+4) Deploy service (NodePort on 30080)
+- kubectl apply -n ml -f ../k8s-kind/deployment.yaml
+- kubectl -n ml get svc    # verify TYPE=NodePort, PORT=8080:30080
+
+5) Check service
+- Find kind node IP:
+    docker inspect kind-control-plane --format '{{.NetworkSettings.Networks.kind.IPAddress}}'
+- kubectl -n ml get pods   # wait for READY 1/1
+- curl http://172.18.0.2:30080/health
+- Expected: {"status":"ok","model_version":"2025-01-15_p50p90_v2","feature_version":"feats_39_behavioral_v2","num_features":39,...}
+- NOTE: No port-forward needed. NodePort exposes the service directly.
+
+6) Run PyFlink job
+- Ensure flink-connector-kafka jar is in $FLINK_HOME/lib
+- cd flink
+- python3 -m venv venv && . venv/bin/activate
+- pip install -r requirements.txt
+- Run with NodePort URL:
+    python job.py
+
+ Test if Flink works
+
+- After running job.py without any problem, try:
+- In a new terminal, try: docker exec -it kafka kafka-console-producer.sh --bootstrap-server localhost:9092 --topic iot.machine.status.raw --property "parse.key=true" --property "key.separator=:"
+- try send: ffl-07-2:{"event_id":"test-1","mc_no":"ffl-07-2","occurred_ts":"2026-02-18T10:00:00Z","mc_status":"alarm","ingest_ts":"2025-10-18T10:00:01Z","schema_version":1}
+- In another terminal, try consume: docker exec -it kafka kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic ml.pred.alert.eta --from-beginning --max-messages 1
+- If you see a JSON with "eta_p50_sec", "eta_p90_sec", "next_type" fields → Flink + Service pipeline works correctly! Proceed to next step.
+- If nothing appears after ~10s, check:
+  - kubectl -n ml get pods (pod must be Running 1/1)
+  - curl http://172.18.0.2:30080/health returns ok
+  - Flink logs for HTTP errors
+
+7) Replay for shadow mode (optional, for testing)
+- cd replay
+- python3 -m venv venv && source venv/bin/activate
+- pip install -r requirements.txt
+- python replay.py --input /home/micml/Documents/TestML/DATA_MCSTATUS_ASSY_202601300925.csv --bootstrap localhost:9092 --topic iot.machine.status.raw --sleep 0.0
+
+8) Validate predictions (consumer or UI)
+- Consume the first 10 prediction records: docker exec -it kafka kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic ml.pred.alert.eta --from-beginning --max-messages 10
+- Consume ml.pred.alert.eta and check fields:
+  - P50 < P90, timestamps, type_conf policy, next_type/type_conf = null if conf < 0.6 (by design)
+- Monitor service /metrics and Flink logs
+
+9) Start prediction logger (stores predictions as daily Parquet files)
+- cd pred_logger
+- docker build --no-cache -t mic/pred_logger:1.0.0 .
+- docker compose up -d
+- docker logs pred_logger -f   # verify flushing
+- Files stored at: /home/micml/Documents/TestML/predictions/predictions_YYYY-MM-DD.parquet
+- View stored predictions:
+    python view_predictions.py
+    python view_predictions.py /home/micml/Documents/TestML/predictions/predictions_2026-03-06.parquet
+
+10) Dashboard
+- cd dashboard
+- python3 -m venv venv && source venv/bin/activate
+- pip install -r requirements.txt
+- For replay:
+    export KAFKA_BOOTSTRAP=localhost:9092
+    export KAFKA_TOPIC=ml.pred.alert.eta
+    export BUFFER_HOURS=87600
+    streamlit run app.py --server.port 8503
+- For live:
+    export KAFKA_BOOTSTRAP=localhost:9092
+    export KAFKA_TOPIC=ml.pred.alert.eta
+    export BUFFER_HOURS=24
+    streamlit run app.py --server.port 8503
+- In sidebar, select "latest (live)" for live mode, "earliest (replay)" for replay mode
+
+11) Live mode — MQTT bridge
+- cd mqtt_to_ml_kafka
+- Edit .env — set correct MQTT_BROKER IP and KAFKA_SERVER IP
+- docker build --no-cache -t mic/mqtt_ml_kafka:1.0.0 .
+- docker compose up -d
+- docker logs mqtt_to_ml_kafka -f   # watch for "Connected" and message counts
+
+12) Terminal Live Prediction Viewer
+Quick version (raw JSON):
+- docker exec -it kafka kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092 \
+  --topic ml.pred.alert.eta \
+  --from-beginning
+Pretty version:
+- pip install kafka-python
+- python live_monitor.py
+
+13) Verification sequence (live deployment)
+1. Start Kafka, Kind, Service, Flink      (steps 1-6)
+2. Start prediction logger                (step 9)
+3. Start MQTT bridge                      (step 11)
+4. Start terminal monitor                 (step 12)
+5. Watch for first predictions (should appear within seconds of machines sending status)
+6. If predictions flow → start dashboard  (step 10)
+
+Acceptance gates (shadow mode, rolling):
+- ETA: MedAE ≤ ~60s; Hit@±5m ≥ 75%; Hit@±10m ≥ 80%
+- Coverage: P90 88–93% overall and per machine
+- P90 per-machine (n≥200) ≥ 84%
+- Type: display only if conf ≥ 0.6
+- Service p95 latency < 100 ms; error rate < 1%
+
+Nudge rule (per-machine P90):
+- If P90 coverage < 88% or > 95% for 3 consecutive days for a machine:
+  - Increase/decrease its multiplier by 2–5% in artifacts (config map)
+  - Redeploy service
+
+Troubleshooting:
+- Pod crashing? → kubectl -n ml logs deployment/alert-eta-service --tail=50
+- No predictions? → Check Flink terminal for errors, verify curl http://$KIND_IP:30080/health
+- Dashboard crash? → Check terminal for Python errors, restart streamlit
+- MQTT bridge not receiving? → docker logs mqtt_to_ml_kafka -f, verify MQTT_BROKER IP
+- Stale data? → Delete Kafka topics and recreate: ./create-topics.sh
