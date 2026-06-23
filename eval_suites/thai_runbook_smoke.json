@@ -1,0 +1,62 @@
+{
+  "name": "thai_runbook_smoke",
+  "version": "1.2",
+  "description": "Thai-language questions against the English machine-status runbook. Also guards against Thai identity-router hijacking of domain questions containing ชื่ออะไร. Cases run in isolated sessions by default to prevent cross-case memory contamination.",
+  "defaults": {
+    "selected_document": "developer_support/machine_status_prediction_runbook.md",
+    "document_behavior": "strict_selected"
+  },
+  "cases": [
+    {
+      "id": "thai_raw_topic",
+      "question": "Kafka raw topic ของ pipeline นี้ชื่ออะไร",
+      "tags": [
+        "thai",
+        "runbook",
+        "exact",
+        "router_regression"
+      ],
+      "expected_fragments": [
+        "iot.machine.status.raw"
+      ],
+      "forbidden_fragments": [
+        "สวัสดีครับ",
+        "ผมคือ MIC 9000",
+        "ผู้ช่วย AI ภายใน"
+      ],
+      "expected_retrieval": {
+        "raw_hit_count": 24,
+        "accepted_hit_count": 8,
+        "similarity_threshold": 0.28,
+        "selected_source_path": "developer_support/machine_status_prediction_runbook.md"
+      }
+    },
+    {
+      "id": "thai_type_threshold",
+      "question": "ถ้า confidence ของ next type ต่ำกว่า 0.6 ต้องทำอย่างไร",
+      "tags": [
+        "thai",
+        "runbook",
+        "threshold"
+      ],
+      "expected_fragments": [
+        "0.6"
+      ],
+      "expected_any_fragments": [
+        [
+          "None",
+          "ไม่แสดง",
+          "suppress",
+          "suppressed"
+        ]
+      ],
+      "expected_retrieval": {
+        "raw_hit_count": 24,
+        "accepted_hit_count": 8,
+        "similarity_threshold": 0.28,
+        "selected_source_path": "developer_support/machine_status_prediction_runbook.md"
+      }
+    }
+  ],
+  "isolate_cases": true
+}

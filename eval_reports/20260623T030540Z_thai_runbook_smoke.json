@@ -1,0 +1,196 @@
+{
+  "suite_name": "thai_runbook_smoke",
+  "suite_version": "1.2",
+  "started_at_utc": "2026-06-23T03:05:26+00:00",
+  "completed_at_utc": "2026-06-23T03:05:40+00:00",
+  "duration_seconds": 14.4397,
+  "total_cases": 2,
+  "passed_cases": 2,
+  "failed_cases": 0,
+  "skipped_cases": 0,
+  "pass_rate": 1.0,
+  "session_id": "isolated_per_case",
+  "metadata": {
+    "suite_path": "/home/micml/Documents/Chatbot/internal-rag-chatbot/eval_suites/thai_runbook_smoke.json",
+    "user_id": "mic9000-eval",
+    "session_title": "Eval: thai_runbook_smoke",
+    "isolate_cases": true,
+    "shared_session_id": "01ab6717-952a-4b6e-b559-b22156f04110",
+    "case_session_ids": {
+      "thai_raw_topic": "19b866aa-fea3-4a22-a6a0-b6c2eae3eae5",
+      "thai_type_threshold": "11a00b4b-7933-4fbf-96b7-0fa2b2e83814"
+    }
+  },
+  "results": [
+    {
+      "case_id": "thai_raw_topic",
+      "question": "Kafka raw topic ของ pipeline นี้ชื่ออะไร",
+      "status": "PASS",
+      "passed": true,
+      "skipped": false,
+      "latency_seconds": 11.0105,
+      "answer": "Kafka raw topic ของ pipeline นี้คือ `iot.machine.status.raw` ครับ [S2, S3, S4]",
+      "failures": [],
+      "route": "document_qa",
+      "answerable": true,
+      "cited_source_ids": [
+        "S2",
+        "S3",
+        "S4"
+      ],
+      "retrieval_summary": {
+        "retrieval_run_id": 374,
+        "session_id": "19b866aa-fea3-4a22-a6a0-b6c2eae3eae5",
+        "user_message_id": 915,
+        "assistant_message_id": 916,
+        "original_query": "Kafka raw topic ของ pipeline นี้ชื่ออะไร",
+        "standalone_query": "Kafka raw topic ของ pipeline นี้ชื่ออะไร",
+        "filter_criteria": {
+          "source_path": "developer_support/machine_status_prediction_runbook.md"
+        },
+        "raw_hit_count": 24,
+        "accepted_hit_count": 8,
+        "top_score": 0.6808606699924183,
+        "similarity_threshold": 0.28,
+        "embedding_seconds": 8.9868,
+        "search_seconds": 0.006,
+        "total_seconds": 8.998,
+        "llm_called": true,
+        "thinking_enabled": false,
+        "llm_metrics": {
+          "elapsed_seconds": 1.927,
+          "eval_count": 77,
+          "prompt_eval_count": 3298,
+          "tokens_per_second": 119.893
+        },
+        "limitations": [],
+        "retrieval_diagnostics": {
+          "effective_similarity_threshold": 0.28,
+          "effective_top_k_final": 8,
+          "effective_top_k_initial": 24,
+          "requested_similarity_threshold": 0.28,
+          "requested_top_k_final": 8,
+          "requested_top_k_initial": 24
+        },
+        "created_at": "2026-06-23T03:05:37.245+00:00"
+      },
+      "raw_result_keys": [
+        "answer",
+        "answerable",
+        "assistant_message_id",
+        "cited_sources",
+        "confidence",
+        "document_behavior",
+        "document_scope",
+        "document_scope_used",
+        "effective_filter_criteria",
+        "escalation_recommended",
+        "followup_uses_document_scope",
+        "llm_called",
+        "llm_metrics",
+        "rag_context_max_characters",
+        "rag_similarity_threshold",
+        "rag_top_k_final",
+        "rag_top_k_initial",
+        "retrieval_run_id",
+        "route",
+        "route_confidence",
+        "route_reason",
+        "router_called",
+        "router_metrics",
+        "session_id",
+        "standalone_query",
+        "thinking_enabled",
+        "user_message",
+        "user_message_id"
+      ],
+      "session_id": "19b866aa-fea3-4a22-a6a0-b6c2eae3eae5"
+    },
+    {
+      "case_id": "thai_type_threshold",
+      "question": "ถ้า confidence ของ next type ต่ำกว่า 0.6 ต้องทำอย่างไร",
+      "status": "PASS",
+      "passed": true,
+      "skipped": false,
+      "latency_seconds": 3.3523,
+      "answer": "หากค่า confidence ของ predicted alert type ต่ำกว่า 0.6 ระบบจะทำการ suppression (ระงับ) การแสดงผลของ alert type นั้น โดยจะกำหนดค่าเป็น `None` ซึ่งเป็นการระบุว่าผลลัพธ์ที่ได้นั้นไม่มีความแน่นอน (uncertain) [S1, S2]. นอกจากนี้ ในส่วนของ Acceptance gates ยังมีการระบุเงื่อนไขว่าการแสดงผล Type จะทำได้ก็ต่อเมื่อค่า confidence ≥ 0.6 เท่านั้น [S3].",
+      "failures": [],
+      "route": "document_qa",
+      "answerable": true,
+      "cited_source_ids": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "retrieval_summary": {
+        "retrieval_run_id": 375,
+        "session_id": "11a00b4b-7933-4fbf-96b7-0fa2b2e83814",
+        "user_message_id": 917,
+        "assistant_message_id": 918,
+        "original_query": "ถ้า confidence ของ next type ต่ำกว่า 0.6 ต้องทำอย่างไร",
+        "standalone_query": "ถ้า confidence ของ next type ต่ำกว่า 0.6 ต้องทำอย่างไร",
+        "filter_criteria": {
+          "source_path": "developer_support/machine_status_prediction_runbook.md"
+        },
+        "raw_hit_count": 24,
+        "accepted_hit_count": 8,
+        "top_score": 0.99,
+        "similarity_threshold": 0.28,
+        "embedding_seconds": 0.0694,
+        "search_seconds": 0.0042,
+        "total_seconds": 0.0784,
+        "llm_called": true,
+        "thinking_enabled": false,
+        "llm_metrics": {
+          "elapsed_seconds": 3.193,
+          "eval_count": 211,
+          "prompt_eval_count": 3203,
+          "tokens_per_second": 119.258
+        },
+        "limitations": [
+          "คำตอบนี้อ้างอิงตามนโยบาย Inference Guardrails และเงื่อนไขการแสดงผลที่ระบุไว้ในเอกสารประกอบการใช้งาน (Runbook) เท่านั้น"
+        ],
+        "retrieval_diagnostics": {
+          "effective_similarity_threshold": 0.28,
+          "effective_top_k_final": 8,
+          "effective_top_k_initial": 24,
+          "requested_similarity_threshold": 0.28,
+          "requested_top_k_final": 8,
+          "requested_top_k_initial": 24
+        },
+        "created_at": "2026-06-23T03:05:40.639+00:00"
+      },
+      "raw_result_keys": [
+        "answer",
+        "answerable",
+        "assistant_message_id",
+        "cited_sources",
+        "confidence",
+        "document_behavior",
+        "document_scope",
+        "document_scope_used",
+        "effective_filter_criteria",
+        "escalation_recommended",
+        "followup_uses_document_scope",
+        "llm_called",
+        "llm_metrics",
+        "rag_context_max_characters",
+        "rag_similarity_threshold",
+        "rag_top_k_final",
+        "rag_top_k_initial",
+        "retrieval_run_id",
+        "route",
+        "route_confidence",
+        "route_reason",
+        "router_called",
+        "router_metrics",
+        "session_id",
+        "standalone_query",
+        "thinking_enabled",
+        "user_message",
+        "user_message_id"
+      ],
+      "session_id": "11a00b4b-7933-4fbf-96b7-0fa2b2e83814"
+    }
+  ]
+}
