@@ -706,42 +706,7 @@ Documents in `data/documents/` should be committed only if they are approved int
 
 ---
 
-## 18. Chainlit cleanup note
-
-Chainlit is no longer the active UI runtime.
-
-If these files still exist and are not used by any current import or deployment script, they can usually be archived or deleted:
-
-```text
-chainlit_app.py
-chainlit.md
-.chainlit/
-requirements_chainlit.txt
-public/mic9000.css
-public/mic9000-mark.svg
-app/ui/chainlit_bridge.py
-app/ui/chainlit_history.py
-app/ui/chainlit_renderers.py
-app/ui/chainlit_settings.py
-app/ui/chainlit_shell.py
-scripts/run_chainlit.sh
-deploy/systemd/mic9000-chainlit.service
-deploy/nginx/mic9000.nginx.conf
-```
-
-Before deleting, check imports:
-
-```bash
-grep -R "chainlit\|chainlit_app\|app.ui.chainlit" -n . \
-  --exclude-dir=.git \
-  --exclude-dir=.venv
-```
-
-If nothing active references them, they are old UI migration leftovers.
-
----
-
-## 19. Maintainer rules
+## 18. Maintainer rules
 
 1. Do not edit retrieval, routing, prompts, or index safety casually.
 2. Any document change must be followed by an index rebuild.
@@ -754,7 +719,7 @@ If nothing active references them, they are old UI migration leftovers.
 
 ---
 
-## 20. Quick command reference
+## 19. Quick command reference
 
 Start environment:
 
@@ -814,9 +779,9 @@ curl http://localhost:11434/api/tags
 
 ---
 
-## 21. Current recommended production document set
+## 20. Current recommended production document set
 
-For the clean handover version, use only the MIC 9000 project runbook unless another internal document is intentionally approved.
+For the clean handover version, use only the project runbook unless another internal document is intentionally approved.
 
 Recommended:
 
@@ -827,9 +792,9 @@ data/documents/developer_support/mic9000_internal_rag_chatbot_runbook.md
 Not recommended:
 
 ```text
-data/documents/company_info/Apiwit_Tech_CV.pdf
+data/documents/company_info/KFC_menu.pdf
 old synthetic test documents
-Blood Meridian or other external books
+Novel or other external books
 sample stress-test files
 personal files
 ```
